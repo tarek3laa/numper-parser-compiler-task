@@ -1,0 +1,58 @@
+import java.io.*;
+import java.util.*;
+enum Type{EOF,DOT,NUM,ZERO,MINUS}
+class Token{
+
+		String text;
+		int begin,end;
+		Type type;
+		
+		public Token(Type type,String text){
+			this.type = type;
+			this.text = text;
+			this.end  = end;
+			this.begin = begin;
+		}
+		public String toString(){
+			return String.format("[%s , %s]",type,text);
+		}
+
+}
+%%
+%class Lexer
+%public
+%function getToken
+%type Token
+%{
+	
+	public static void main(String[] args) throws IOException{
+	
+		String msg = "-23.45";
+		StringReader s = new StringReader(msg);
+		Lexer l = new Lexer(s);
+		Token tok;
+		while( (tok = l.getToken()).type != Type.EOF)
+			System.out.println(tok);		
+		
+	}
+	
+
+
+%}
+%line
+%char
+%eofval{
+	return new Token(Type.EOF,"");
+%eofval}
+DIGIT=[1-9]
+WS=[\r\t\n\f\ ]
+%%
+<YYINITIAL> {DIGIT} {return new Token(Type.NUM,yytext());}
+<YYINITIAL> "0" {return new Token(Type.ZERO,yytext());}
+<YYINITIAL> "-" {return new Token(Type.MINUS,yytext());}
+<YYINITIAL> "." {return new Token(Type.DOT,yytext());}
+<YYINITIAL> {WS} {System.out.println("Error");}
+<YYINITIAL> . {System.out.println("Error");}
+
+
+
